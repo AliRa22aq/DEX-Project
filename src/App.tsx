@@ -131,7 +131,7 @@ function App() {
 
   const buyTokens = async () => {
     const web3 = new Web3(window.ethereum);
-    const buyTokens = await data?.DEXContract?.methods.buy().send({ from: data.userAddress, value: web3.utils.toWei("0.1", "ether") })
+    await data?.DEXContract?.methods.buy().send({ from: data.userAddress, value: web3.utils.toWei("0.1", "ether") })
       .on("confirmation", (confirmationNumber: any, receipt: any) => {
         alert("Purchase successful")
         setData(pre => { return { ...pre, isTransectionThrough: true } })
@@ -143,7 +143,7 @@ function App() {
   const approveToSell = async () => {
     const web3 = new Web3(window.ethereum);
     if (data?.DEXAddress) {
-      const approveTokens = await data?.ERCToken?.methods.approve(data.DEXAddress, web3.utils.toWei("0.1", "ether")).send({ from: data.userAddress })
+      await data?.ERCToken?.methods.approve(data.DEXAddress, web3.utils.toWei("0.1", "ether")).send({ from: data.userAddress })
         .on("confirmation", (confirmationNumber: any, receipt: any) => {
           alert("Approval successful")
           setData(pre => { return { ...pre, isTransectionThrough: true } })
@@ -156,7 +156,7 @@ function App() {
   const refuseToSell = async () => {
     const web3 = new Web3(window.ethereum);
     if (data?.DEXAddress) {
-      const approveTokens = await data?.ERCToken?.methods.approve(data.DEXAddress, web3.utils.toWei("0", "ether")).send({ from: data.userAddress })
+      await data?.ERCToken?.methods.approve(data.DEXAddress, web3.utils.toWei("0", "ether")).send({ from: data.userAddress })
         .on("confirmation", (confirmationNumber: any, receipt: any) => {
           alert("Approval successful")
           setData(pre => { return { ...pre, isTransectionThrough: true } })
@@ -166,22 +166,22 @@ function App() {
     }
   }
 
-  const checkAllownce = async () => {
-    const web3 = new Web3(window.ethereum);
+  // const checkAllownce = async () => {
+  //   const web3 = new Web3(window.ethereum);
 
-    if (data?.DEXAddress && data.userAddress) {
-      let allownce = await data?.ERCToken?.methods.allowance(data.userAddress, data?.DEXAddress).call()
-      if (allownce) {
-        allownce = web3.utils.fromWei(allownce, "ether")
-        setData(pre => { return { ...pre, approvedTokens: Number(allownce) } })
-      }
-    }
-  }
+  //   if (data?.DEXAddress && data.userAddress) {
+  //     let allownce = await data?.ERCToken?.methods.allowance(data.userAddress, data?.DEXAddress).call()
+  //     if (allownce) {
+  //       allownce = web3.utils.fromWei(allownce, "ether")
+  //       setData(pre => { return { ...pre, approvedTokens: Number(allownce) } })
+  //     }
+  //   }
+  // }
 
   const sellTokens = async () => {
     const web3 = new Web3(window.ethereum);
 
-    const sellTokens = await data?.DEXContract?.methods.sell(web3.utils.toWei(String(data.approvedTokens), "ether"))
+    await data?.DEXContract?.methods.sell(web3.utils.toWei(String(data.approvedTokens), "ether"))
       .send({ from: data.userAddress })
       .on("confirmation", (confirmationNumber: any, receipt: any) => {
         alert("Sold successfully")
