@@ -312,7 +312,7 @@ function App() {
           <div>
             Approve <b>0.1</b> ERCs to sell to DEX
             <br />
-            <button onClick={approveToSell}> Approve </button>
+            <button disabled={data.userBalance.tokens < 0.1 ? true : false} onClick={approveToSell}> Approve </button>
           </div>
       }
 
