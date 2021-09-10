@@ -3,7 +3,7 @@ require('dotenv').config();
 
 module.exports = {
   contracts_directory: './contracts/',
-  contracts_build_directory: '../frontend/src/abis/',
+  contracts_build_directory: '../src/abis/',
   networks: {
     development: {
       host: "127.0.0.1",
