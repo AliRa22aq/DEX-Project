@@ -16,7 +16,7 @@ interface DataType {
   approvedTokens: number,
   userBalance: { ethers: number, tokens: number }
   dexBalance: { ethers: number, tokens: number },
-  isTransectionThrough: boolean
+  updateBalance: boolean
 }
 
 function App() {
@@ -30,7 +30,7 @@ function App() {
     approvedTokens: 0,
     userBalance: { ethers: 0, tokens: 0 },
     dexBalance: { ethers: 0, tokens: 0 },
-    isTransectionThrough: false
+    updateBalance: false
   });
 
   window.ethereum.on('accountsChanged', function (accounts: string[]) {
@@ -134,7 +134,7 @@ function App() {
     await data?.DEXContract?.methods.buy().send({ from: data.userAddress, value: web3.utils.toWei("0.1", "ether") })
       .on("confirmation", (confirmationNumber: any, receipt: any) => {
         alert("Purchase successful")
-        setData(pre => { return { ...pre, isTransectionThrough: true } })
+        setData(pre => { return { ...pre, updateBalance: true } })
         console.log(confirmationNumber)
         console.log(receipt)
       })
@@ -146,7 +146,7 @@ function App() {
       await data?.ERCToken?.methods.approve(data.DEXAddress, web3.utils.toWei("0.1", "ether")).send({ from: data.userAddress })
         .on("confirmation", (confirmationNumber: any, receipt: any) => {
           alert("Approval successful")
-          setData(pre => { return { ...pre, isTransectionThrough: true } })
+          setData(pre => { return { ...pre, updateBalance: true } })
           console.log(confirmationNumber)
           console.log(receipt)
         })
@@ -159,7 +159,7 @@ function App() {
       await data?.ERCToken?.methods.approve(data.DEXAddress, web3.utils.toWei("0", "ether")).send({ from: data.userAddress })
         .on("confirmation", (confirmationNumber: any, receipt: any) => {
           alert("Approval successful")
-          setData(pre => { return { ...pre, isTransectionThrough: true } })
+          setData(pre => { return { ...pre, updateBalance: true } })
           console.log(confirmationNumber)
           console.log(receipt)
         })
@@ -185,71 +185,76 @@ function App() {
       .send({ from: data.userAddress })
       .on("confirmation", (confirmationNumber: any, receipt: any) => {
         alert("Sold successfully")
-        setData(pre => { return { ...pre, isTransectionThrough: true } })
+        setData(pre => { return { ...pre, updateBalance: true } })
         console.log(confirmationNumber)
         console.log(receipt)
       })
   }
 
-  const updateBalance = async () => {
-    const web3 = new Web3(window.ethereum);
-    if (data.DEXAddress && data.userAddress && data.ERCToken) {
-    // Checking balances
-    let userbalance = await web3.eth.getBalance(data.userAddress);
-    let userbalanceInEth = web3.utils.fromWei(userbalance.toString(), "ether")
-    console.log("User has Eths", userbalanceInEth)
+  // const updateAllBalance = async () => {
 
-    const userTokenbalance = await data?.ERCToken.methods.balanceOf(data.userAddress).call()
-    const userTokenbalanceInEth = web3.utils.fromWei(userTokenbalance.toString(), "ether")
-    console.log("User has Tokens ", userTokenbalanceInEth)
+  //   const web3 = new Web3(window.ethereum);
+  //   if (data.DEXAddress && data.userAddress && data.ERCToken) {
+  //     // Checking balances
+  //     let userbalance = await web3.eth.getBalance(data.userAddress);
+  //     let userbalanceInEth = web3.utils.fromWei(userbalance.toString(), "ether")
+  //     console.log("User has Eths", userbalanceInEth)
 
-    const newUserBalance = {
-      ethers: Number(userbalanceInEth),
-      tokens: Number(userTokenbalanceInEth)
-    }
+  //     const userTokenbalance = await data?.ERCToken.methods.balanceOf(data.userAddress).call()
+  //     const userTokenbalanceInEth = web3.utils.fromWei(userTokenbalance.toString(), "ether")
+  //     console.log("User has Tokens ", userTokenbalanceInEth)
 
-    let DEXBalance = await web3.eth.getBalance(data.DEXAddress);
-    let DEXBalanceInEth = web3.utils.fromWei(DEXBalance.toString(), "ether")
-    console.log("DEX has Eths", DEXBalanceInEth)
+  //     const newUserBalance = {
+  //       ethers: Number(userbalanceInEth),
+  //       tokens: Number(userTokenbalanceInEth)
+  //     }
 
-    const DEXTokenBalance = await data.ERCToken.methods.balanceOf(data.DEXAddress).call()
-    const DEXTokenBalanceInEth = web3.utils.fromWei(DEXTokenBalance.toString(), "ether")
-    console.log("DEX has ERC Tokens ", DEXTokenBalanceInEth)
+  //     let DEXBalance = await web3.eth.getBalance(data.DEXAddress);
+  //     let DEXBalanceInEth = web3.utils.fromWei(DEXBalance.toString(), "ether")
+  //     console.log("DEX has Eths", DEXBalanceInEth)
 
-    const newDexBalance = {
-      ethers: Number(DEXBalanceInEth),
-      tokens: Number(DEXTokenBalanceInEth)
-    }
+  //     const DEXTokenBalance = await data.ERCToken.methods.balanceOf(data.DEXAddress).call()
+  //     const DEXTokenBalanceInEth = web3.utils.fromWei(DEXTokenBalance.toString(), "ether")
+  //     console.log("DEX has ERC Tokens ", DEXTokenBalanceInEth)
 
-    const allownce = await data.ERCToken.methods.allowance(data.userAddress, data.DEXAddress).call()
-    const allownceInEth = web3.utils.fromWei(allownce.toString(), "ether")
+  //     const newDexBalance = {
+  //       ethers: Number(DEXBalanceInEth),
+  //       tokens: Number(DEXTokenBalanceInEth)
+  //     }
 
-      setData(pre => {
-        return {
-          ...pre,
-          approvedTokens: Number(allownceInEth),
-          userBalance: newUserBalance,
-          dexBalance: newDexBalance
-        }
-      }
-      )
-    }
-  }
+  //     const allownce = await data.ERCToken.methods.allowance(data.userAddress, data.DEXAddress).call()
+  //     const allownceInEth = web3.utils.fromWei(allownce.toString(), "ether")
+
+  //     setData(pre => {
+  //       return {
+  //         ...pre,
+  //         approvedTokens: Number(allownceInEth),
+  //         userBalance: newUserBalance,
+  //         dexBalance: newDexBalance
+  //       }
+  //     }
+  //     )
+  //   }
+  // }
+
 
   useEffect(() => {
     loadWeb3()
   }, [])
+
+  // useEffect(() => {
+  //   updateAllBalance()
+  // }, [data.updateBalance])
 
 
   useEffect(() => {
     if (data.userAddress) {
       loadBlockchainData()
     }
-  }, [data.userAddress])
+  }, [data.userAddress, data.updateBalance])
 
-  useEffect(() => {
-    updateBalance()
-  }, [data.isTransectionThrough])
+
+
 
 
   return (
