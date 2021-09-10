@@ -296,7 +296,7 @@ function App() {
           <div>
             Buy <b>0.1</b> ERC Tokens
             <br />
-            <button disabled={data.dexBalance.tokens > 0 ? false : true} onClick={buyTokens}> Buy </button>
+            <button disabled={data.dexBalance.tokens > 0 &&  data.userBalance.ethers > 0.1 ? false : true} onClick={buyTokens}> Buy </button>
           </div> : null
       }
 
