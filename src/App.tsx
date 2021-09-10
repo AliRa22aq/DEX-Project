@@ -269,6 +269,8 @@ function App() {
             <div>Please Signin to Metamask</div>
             <br />
             <button onClick={() => loadWeb3()}> Connect </button>
+            <br />
+            <br />
           </>
       }
 
